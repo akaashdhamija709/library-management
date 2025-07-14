@@ -1,0 +1,107 @@
+<!-- src/main/resources/templates/return-confirm.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+  <title>Confirm Return</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+</head>
+<body class="bg-light">
+<div sec:authorize="hasRole('ADMIN')" class="m-3">
+  <a href="/admin/returns" class="btn btn-outline-secondary">Back to Dashboard</a>
+  <a href="/books" class="btn btn-outline-primary">Home</a>
+</div>
+
+<div class="container mt-4">
+  <h2>Confirm Book Return</h2>
+  <form th:action="@{'/admin/returns/confirm/' + ${issue.id}}"
+        method="post" class="mt-3" id="returnForm">
+    <!-- Book/User Info -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Book Title</label>
+        <input class="form-control" type="text"
+               th:value="${issue.book.title}" readonly/>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Issued To</label>
+        <input class="form-control" type="text"
+               th:value="${issue.user.username}" readonly/>
+      </div>
+    </div>
+    <!-- Dates -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Due Date</label>
+        <input class="form-control" type="text"
+               th:value="${issue.expectedReturnDate}" readonly/>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Return Date</label>
+        <input class="form-control" type="text"
+               th:value="${T(java.time.LocalDate).now()}" readonly/>
+      </div>
+    </div>
+    <!-- Penalty -->
+    <div class="mb-3">
+      <label class="form-label">Penalty (€)</label>
+      <input name="penalty" type="number" step="0.01"
+             class="form-control"
+             th:value="${penalty}"
+             readonly/>
+    </div>
+    <button type="submit" class="btn btn-primary">Process Return</button>
+  </form>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Confirm Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Confirm receipt of €<span th:text="${penalty}"></span>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmReturnButton">Confirm Return</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Use the combined bundle including Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous">
+</script>
+<!-- Modal Control Script -->
+<script>
+  console.log("ReturnConfirm script initialized");
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('returnForm');
+    const confirmBtn = document.getElementById('confirmReturnButton');
+
+    if (!form || !confirmBtn) {
+      console.error("❌ Form or confirm button not found:", form, confirmBtn);
+      return;
+    }
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      console.log("🟡 'Process Return' clicked, showing modal...");
+      new bootstrap.Modal(document.getElementById('confirmModal')).show();
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      console.log("🟢 'Confirm Return' clicked, submitting form");
+      form.submit();
+    });
+  });
+</script>
+</body>
+</html>

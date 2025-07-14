@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <title>User Profile</title>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+</head>
+<body class="bg-light">
+<div class="container mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="/books" class="btn btn-outline-secondary">Home</a>
+    <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+      <button type="submit" class="btn btn-outline-danger">Logout</button>
+    </form>
+  </div>
+
+  <h2>My Profile</h2>
+  <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+  <ul class="nav nav-tabs mt-4" id="profileTabs" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+              type="button" role="tab">Book History</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit"
+              type="button" role="tab">Edit Profile</button>
+    </li>
+  </ul>
+
+  <div class="tab-content p-4 border bg-white" id="profileTabsContent">
+    <!-- Book History -->
+    <div class="tab-pane fade show active" id="history" role="tabpanel">
+      <h4>Currently Issued</h4>
+      <table class="table table-striped">
+        <thead>
+        <tr><th>Title</th><th>Due Date</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="iss : ${issued}">
+          <td th:text="${iss.book.title}">Book Title</td>
+          <td th:text="${iss.expectedReturnDate}">Due Date</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(issued)}">
+          <td colspan="2" class="text-center">No books currently issued.</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h4 class="mt-4">Past Issues</h4>
+      <table class="table table-striped">
+        <thead>
+        <tr><th>Title</th><th>Loan Date</th><th>Return Date</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="iss : ${history}">
+          <td th:text="${iss.book.title}">Book Title</td>
+          <td th:text="${iss.loanDate}">Loan Date</td>
+          <td th:text="${iss.returnDate}">Return Date</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(history)}">
+          <td colspan="3" class="text-center">No past issues.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Edit Profile -->
+    <div class="tab-pane fade" id="edit" role="tabpanel">
+      <h4>Edit Profile</h4>
+      <form th:action="@{/profile/update}" th:object="${user}" method="post" class="mt-3">
+        <div class="mb-3">
+          <label class="form-label">First Name</label>
+          <input type="text" th:field="*{first_name}" class="form-control"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Last Name</label>
+          <input type="text" th:field="*{last_name}" class="form-control"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" th:field="*{email}" class="form-control"/>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Age</label>
+          <input type="number" th:field="*{age}" class="form-control"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

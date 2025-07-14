@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:replace="layout :: content">
+<h2>Register</h2>
+<form th:action="@{/users/register}" th:object="${user}" method="post" onsubmit="return validatePasswords()">
+    <input th:field="*{name}" placeholder="Name" required/>
+    <input th:field="*{email}" placeholder="Email" type="email" required/>
+    <input th:field="*{password}" placeholder="Password" type="password" id="password" required/>
+    <input placeholder="Confirm Password" type="password" id="confirmPassword" required/>
+    <button type="submit">Sign Up</button>
+</form>
+<script>
+    function validatePasswords() {
+      var pw = document.getElementById('password').value;
+      var cpw = document.getElementById('confirmPassword').value;
+      if (pw !== cpw) {
+        alert('Passwords do not match.');
+        return false;
+      }
+      return true;
+    }
+</script>
+</body>
+</html>
