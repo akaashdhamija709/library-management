@@ -16,6 +16,6 @@ Spring Boot · Thymeleaf · Spring Security · JPA/Hibernate · MySQL · Bootstr
 1. Clone this repo  
 2. Configure `application.properties` for your MySQL setup  
 3. Run `mvn spring-boot:run`  
-4. Visit `http://localhost:8080/books
+4. Visit `http://localhost:8080/books'
 
 
